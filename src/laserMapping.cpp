@@ -654,7 +654,7 @@ void publish_init_kdtree(const ros::Publisher &pubLaserCloudFullRes)
     pcl::toROSMsg(*laserCloudInit, laserCloudmsg);
 
     laserCloudmsg.header.stamp = ros::Time().fromSec(lidar_end_time);
-    laserCloudmsg.header.frame_id = "camera_init";
+    laserCloudmsg.header.frame_id = "unilidar_odom_frame"; //"camera_init";
     pubLaserCloudFullRes.publish(laserCloudmsg);
 }
 
@@ -682,7 +682,7 @@ void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes)
         pcl::toROSMsg(*laserCloudWorld, laserCloudmsg);
 
         laserCloudmsg.header.stamp = ros::Time().fromSec(lidar_end_time);
-        laserCloudmsg.header.frame_id = "camera_init";
+        laserCloudmsg.header.frame_id = "unilidar_odom_frame"; //"camera_init";
         pubLaserCloudFullRes.publish(laserCloudmsg);
         publish_count -= PUBFRAME_PERIOD;
     }
@@ -767,8 +767,8 @@ void set_posestamp(T &out)
 
 void publish_odometry(const ros::Publisher &pubOdomAftMapped)
 {
-    odomAftMapped.header.frame_id = "camera_init";
-    odomAftMapped.child_frame_id = "aft_mapped";
+    odomAftMapped.header.frame_id = "unilidar_odom_frame"; //"camera_init";
+    odomAftMapped.child_frame_id = "unilidar_lidar"; //"aft_mapped";
     if (publish_odometry_without_downsample)
     {
         odomAftMapped.header.stamp = ros::Time().fromSec(time_current);
@@ -792,7 +792,7 @@ void publish_odometry(const ros::Publisher &pubOdomAftMapped)
     q.setY(odomAftMapped.pose.pose.orientation.y);
     q.setZ(odomAftMapped.pose.pose.orientation.z);
     transform.setRotation(q);
-    br.sendTransform(tf::StampedTransform(transform, odomAftMapped.header.stamp, "camera_init", "aft_mapped"));
+    //br.sendTransform(tf::StampedTransform(transform, odomAftMapped.header.stamp, "unilidar_odom_frame", "unilidar_lidar"));
 }
 
 void publish_path(const ros::Publisher pubPath)
@@ -800,7 +800,7 @@ void publish_path(const ros::Publisher pubPath)
     set_posestamp(msg_body_pose.pose);
 
     msg_body_pose.header.stamp = ros::Time().fromSec(lidar_end_time);
-    msg_body_pose.header.frame_id = "camera_init";
+    msg_body_pose.header.frame_id = "unilidar_odom_frame"; //"camera_init";
     static int jjj = 0;
     jjj++;
 
@@ -820,7 +820,7 @@ int main(int argc, char **argv)
     cout << "lidar_type: " << lidar_type << endl;
 
     path.header.stamp = ros::Time().fromSec(lidar_end_time);
-    path.header.frame_id = "camera_init";
+    path.header.frame_id = "unilidar_odom_frame"; // "camera_init";
 
     int frame_num = 0;
     double aver_time_consu = 0,
